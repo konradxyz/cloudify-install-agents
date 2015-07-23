@@ -1,0 +1,29 @@
+{
+        "ip": "10.0.4.47",
+        "fabric_env": {},
+        "package_url": "http://10.0.4.46:53229/packages/agents/ubuntu-trusty-agent.tar.gz",
+        "port": 22,
+        "manager_ip": "10.0.4.46",
+        "distro_codename": "trusty",
+        "basedir": "/home/vagrant",
+        "process_management": {
+            "name": "init.d"
+        },
+        "env": {},
+        "system_python": "python",
+        "min_workers": 0,
+        "envdir": "/home/vagrant/second_host_0f18c_new/env",
+        "distro": "ubuntu",
+        "workdir": "/home/vagrant/second_host_0f18c_new/work",
+        "max_workers": 5,
+        "user": "vagrant",
+        "key": "~/.ssh/id_rsa",
+        "password": null,
+        "agent_dir": "/home/vagrant/second_host_0f18c_new",
+        "name": "second_host_0f18c_new",
+        "windows": false,
+        "local": false,
+        "queue": "second_host_0f18c_new",
+        "disable_requiretty": true
+}
+
