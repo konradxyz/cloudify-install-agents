@@ -11,25 +11,15 @@ function usage_exit {
 }
 
 function install {
-    DIR=$(mktemp -d)
-    pushd $DIR
-    echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee -a /etc/apt/sources.list
-    wget https://www.rabbitmq.com/rabbitmq-signing-key-public.asc
-    sudo apt-key add rabbitmq-signing-key-public.asc
-    sudo apt-get update
-    sudo apt-get -y install rabbitmq-server
-    popd
-    rm -rf $DIR
-    sudo apt-get install python-pip
-    sudo pip install virtualenv
-    virtualenv env
+   virtualenv env
     . env/bin/activate
     pip install -r test-requirements.txt
+    cd ../..
+    pip install -e .
 }
 
 function uninstall {
     rm -rf env
-    sudo apt-get -y remove rabbitmq-server
 }
 
 function run_test {

@@ -16,7 +16,7 @@ from cloudify.utils import setup_logger, LocalCommandRunner
 import cloudify_agent.installer.config.configuration as agent_config
 
 
-_SCRIPT_NAME = 'install_agent.py'
+_SCRIPT_NAME = 'cloudify_install_agents/install_agent.py'
 _AGENT_CONFIG = 'agent.json'
 
 

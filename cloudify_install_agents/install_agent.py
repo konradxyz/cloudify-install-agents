@@ -64,6 +64,11 @@ _CLOUDIFY_DAEMON_HOST = 'CLOUDIFY_DAEMON_HOST'
 _CLOUDIFY_DAEMON_DEPLOYMENT_ID = 'CLOUDIFY_DAEMON_DEPLOYMENT_ID'
 
 
+def get_cloudify_agent():
+    # Should replaced with real representation of agent dict.
+    return __AGENT_DESCRIPTION__
+
+
 def _shlex_split(command):
     lex = shlex.shlex(command, posix=True)
     lex.whitespace_split = True
@@ -238,7 +243,7 @@ def _prepare_cloudify_agent(path):
         with open(path) as f:
             return json.load(f)
     else:
-        return _get_cloudify_agent()
+        return get_cloudify_agent()
 
 
 def _setup_logger(name):

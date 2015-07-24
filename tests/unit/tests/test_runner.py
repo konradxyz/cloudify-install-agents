@@ -2,7 +2,7 @@ import logging
 import unittest2 as unittest
 from cloudify.utils import setup_logger
 
-from install_agent import CommandRunner
+from cloudify_install_agents.install_agent import CommandRunner
 
 
 class TestRunner(unittest.TestCase):
