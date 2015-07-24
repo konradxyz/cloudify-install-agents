@@ -1,45 +1,46 @@
 # Function _get_cloudify_agent should be injected:
 # def _get_cloudify_agent():
-#      return {
-#         "ip": "10.0.4.47",
-#         "fabric_env": {},
-#         "package_url": "http://10.0.4.46:53229/packages/agents/ubuntu-trusty-agent.tar.gz",
-#         "port": 22,
-#         "manager_ip": "10.0.4.46",
-#         "distro_codename": "trusty",
-#         "basedir": "/home/vagrant",
-#         "process_management": {
-#             "name": "init.d"
+#     return {
+#         'ip': '10.0.4.47',
+#         'fabric_env': {},
+#         'package_url': ('http://10.0.4.46:53229/packages/'
+#                         'agents/ubuntu-trusty-agent.tar.gz'),
+#         'port': 22,
+#         'manager_ip': '10.0.4.46',
+#         'distro_codename': 'trusty',
+#         'basedir': '/home/vagrant',
+#         'process_management': {
+#             'name': 'init.d'
 #         },
-#         "env": {},
-#         "system_python": "python",
-#         "min_workers": 0,
-#         "envdir": "/home/vagrant/second_host_0f18c_new/env",
-#         "distro": "ubuntu",
-#         "workdir": "/home/vagrant/second_host_0f18c_new/work",
-#         "max_workers": 5,
-#         "user": "vagrant",
-#         "key": "~/.ssh/id_rsa",
-#         "password": None,
-#         "agent_dir": "/home/vagrant/second_host_0f18c_new",
-#         "name": "second_host_0f18c_new",
-#         "windows": False,
-#         "local": False,
-#         "queue": "second_host_0f18c_new",
-#         "disable_requiretty": True
+#         'env': {},
+#         'system_python': 'python',
+#         'min_workers': 0,
+#         'envdir': '/home/vagrant/second_host_0f18c_new/env',
+#         'distro': 'ubuntu',
+#         'workdir': '/home/vagrant/second_host_0f18c_new/work',
+#         'max_workers': 5,
+#         'user': 'vagrant',
+#         'key': '~/.ssh/id_rsa',
+#         'password': None,
+#         'agent_dir': '/home/vagrant/second_host_0f18c_new',
+#         'name': 'second_host_0f18c_new',
+#         'windows': False,
+#         'local': False,
+#         'queue': 'second_host_0f18c_new',
+#         'disable_requiretty': True
 #     }
 
 import argparse
 import copy
 import json
 import logging
-import subprocess
-import shlex
-import tempfile
 import os
-import urllib
-import sys
+import shlex
 import shutil
+import subprocess
+import sys
+import tempfile
+import urllib
 
 
 _CLOUDIFY_DAEMON_QUEUE = 'CLOUDIFY_DAEMON_QUEUE'
@@ -69,6 +70,7 @@ def _shlex_split(command):
     lex.escape = ''
     return list(lex)
 
+
 def _stringify_values(dictionary):
     dict_copy = copy.deepcopy(dictionary)
     for key, value in dict_copy.iteritems():
@@ -77,6 +79,7 @@ def _stringify_values(dictionary):
         else:
             dict_copy[key] = str(value)
     return dict_copy
+
 
 def _purge_none_values(dictionary):
     dict_copy = copy.deepcopy(dictionary)
@@ -131,8 +134,8 @@ class CommandRunner(object):
                         .format(archive, strip, destination))
 
 
-
 class Installer(object):
+
     def __init__(self, logger, runner, cloudify_agent):
         self.logger = logger
         self.runner = runner
@@ -144,14 +147,14 @@ class Installer(object):
             self.cloudify_agent['envdir'])
 
     def run_agent_command(self, command, execution_env=None):
-        command='{0} {1}'.format(self.cfy_agent_path, command)
+        command = '{0} {1}'.format(self.cfy_agent_path, command)
         self.runner.run(command, execution_env)
-    
+
     def run_daemon_command(self, command, execution_env=None):
         return self.run_agent_command(command='daemons {0} --name={1}'
-                                      .format(command, 
+                                      .format(command,
                                               self.cloudify_agent['name']),
-                                      execution_env=execution_env) 
+                                      execution_env=execution_env)
 
     def install(self):
         self.create_env()
@@ -176,8 +179,8 @@ class Installer(object):
 
     def create(self):
         self.run_daemon_command(command='create {0}'.format(
-                                    self._create_process_management_options()),
-                                execution_env=self._create_agent_env())
+            self._create_process_management_options()),
+            execution_env=self._create_agent_env())
 
     def delete_env(self):
         self.runner.rm_dir(self.cloudify_agent['agent_dir'])
@@ -209,7 +212,7 @@ class Installer(object):
 
         execution_env = _purge_none_values(execution_env)
         execution_env = _stringify_values(execution_env)
-        return execution_env      
+        return execution_env
 
     def _create_process_management_options(self):
         options = []
@@ -226,13 +229,14 @@ def _parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--operation')
     parser.add_argument('--config')
+    parser.add_argument('--dryrun', action='store_true', default=False)
     return parser
 
 
 def _prepare_cloudify_agent(path):
     if path:
         with open(path) as f:
-          return json.load(f)        
+            return json.load(f)
     else:
         return _get_cloudify_agent()
 
@@ -273,7 +277,12 @@ def main(args):
     logger = _setup_logger('installer')
     runner = CommandRunner(logger)
     installer = Installer(logger, runner, cloudify_agent)
-    _perform_operation(command.operation, installer)
+    if command.dryrun:
+        logger.info('Options: {0}'.format(str(command)))
+        logger.info('Agent:')
+        logger.info(str(cloudify_agent))
+    else:
+        _perform_operation(command.operation, installer)
 
 
 if __name__ == '__main__':
