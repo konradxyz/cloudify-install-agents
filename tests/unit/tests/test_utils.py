@@ -11,7 +11,7 @@ from cloudify.utils import setup_logger
 import cloudify_install_agents.utils as utils
 
 
-_SCRIPT_NAME='install_agent.py'
+_SCRIPT_NAME = 'cloudify_install_agents/install_agent.py'
 
 
 class UtilsTest(unittest.TestCase):
@@ -26,7 +26,6 @@ class UtilsTest(unittest.TestCase):
         self.dest_path = tempfile.mkdtemp()
         open(os.path.join(self.dest_path, '__init__.py'), 'a').close()
         self.logger.info('Destination path: {0}'.format(self.dest_path))
-
 
     def test_prepare_script(self):
         agent = {
@@ -68,9 +67,5 @@ class UtilsTest(unittest.TestCase):
         returned_agent = module.get_cloudify_agent()
         self.assertEquals(agent, returned_agent)
 
-
     def tearDown(self):
         shutil.rmtree(self.dest_path)
-
-
- 
