@@ -22,16 +22,16 @@ _AGENT_CONFIG = 'agent.json'
 
 def with_agent(f):
     def wrapper(self):
-        self.prepare_agent()
+        agent = self.get_agent()
         try:
-            f(self, self.agent)
+            f(self, agent)
         finally:
-            self.cleanup_agent()
+            self.cleanup_agent(agent)
     wrapper.__name__ = f.__name__
     return wrapper
 
 
-class InstallerTest(unittest.TestCase):
+class InstallerTestBase(unittest.TestCase):
 
     def setUp(self):
         self.logger = setup_logger('InstallerTest')
@@ -42,39 +42,35 @@ class InstallerTest(unittest.TestCase):
         self.config['repo_dir'] = os.path.expanduser(self.config['repo_dir'])
         self.logger.info(str(self.config))
         current_ctx.set(MockCloudifyContext())
-        self.agent_path = None
-        self.agent = None
         self.runner = LocalCommandRunner(self.logger)
+        self.base_dir = tempfile.mkdtemp()
 
-    def prepare_agent(self):
-        self.assertFalse(self.agent_path)
-        base_dir = tempfile.mkdtemp()
+    def tearDown(self):
+        shutil.rmtree(self.base_dir)
 
+    def get_agent(self):
         result = {
             'local': True,
             'package_url': self.config['agent_url'],
             'user': self.config['agent_user'],
-            'basedir': base_dir,
+            'basedir': self.base_dir,
             'manager_ip': '127.0.0.1',
             'name': 'agent_{0}'.format(uuid.uuid4())
         }
         agent_config.prepare_connection(result)
         # We specify base_dir and user directly, so runner is not needed.
         agent_config.prepare_agent(result, None)
-        result_path = os.path.join(base_dir, _AGENT_CONFIG)
-        with open(result_path, 'w') as agent_file:
+        _, agent_file_path = tempfile.mkstemp()
+        with open(agent_file_path, 'a') as agent_file:
             agent_file.write(json.dumps(result))
-        self.agent = result
-        self.agent_path = base_dir
-        self.logger.info(str(self.agent))
+        result['agent_file'] = agent_file_path
+        return result
 
-    def cleanup_agent(self):
-        self.assertTrue(self.agent_path)
-        shutil.rmtree(self.agent_path)
-        self.agent_path = None
+    def cleanup_agent(self, agent):
+        os.remove(agent['agent_file'])
 
-    def _call(self, operation):
-        agent_config_path = os.path.join(self.agent_path, _AGENT_CONFIG)
+    def call(self, operation, agent):
+        agent_config_path = agent['agent_file']
         command = '{0} {1} --operation={2} --config={3}'.format(
             self.config['python_path'],
             os.path.join(self.config['repo_dir'], _SCRIPT_NAME),
@@ -82,13 +78,16 @@ class InstallerTest(unittest.TestCase):
             agent_config_path)
         self.runner.run(command)
 
+
+class SingleWorkerInstallerTest(InstallerTestBase):
+
     @with_agent
     def test_installer(self, agent):
         worker_name = 'celery@{0}'.format(agent['name'])
         inspect = celery.control.inspect(destination=[worker_name])
         self.assertFalse(inspect.active())
-        self._call('install')
+        self.call('install', agent)
         self.assertTrue(inspect.active())
         self.logger.info(inspect.registered())
-        self._call('uninstall')
+        self.call('uninstall', agent)
         self.assertFalse(inspect.active())
