@@ -1,4 +1,4 @@
-repo_dir: ~/cloudify-install-agents
+repo_dir: ../../
 python_path: /usr/bin/python
-agent_url: http://gigaspaces-repository-eu.s3.amazonaws.com/org/cloudify3/3.3.0/m3-RELEASE/cloudify-ubuntu-trusty-agent_3.3.0-m3-b273.tar.gz
+agent_url: http://46.101.245.114/cfy/konrad/Ubuntu-trusty-agent.tar.gz 
 agent_user: vagrant 
