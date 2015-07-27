@@ -238,6 +238,16 @@ def _parser():
     return parser
 
 
+def _parse_args(parser, args):
+    # Unkown args mean we are running in script plugin task.
+    # So we are not stopping execution.
+    result, _ = parser.parse_known_args(args)
+    if result.config is None:
+        # Make sure that we are able to retrieve agent config.
+        get_cloudify_agent()
+    return result
+
+
 def _prepare_cloudify_agent(path):
     if path:
         with open(path) as f:
@@ -275,9 +285,9 @@ def _perform_operation(operation, installer):
         installer.run_daemon_command(operation)
 
 
-def main(args):
+def _main(args):
     parser = _parser()
-    command = parser.parse_args(args[1:])
+    command = _parse_args(parser, args[1:])
     cloudify_agent = _prepare_cloudify_agent(command.config)
     logger = _setup_logger('installer')
     runner = CommandRunner(logger)
@@ -291,4 +301,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    _main(sys.argv)
