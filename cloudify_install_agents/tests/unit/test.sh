@@ -14,7 +14,7 @@ function install {
    virtualenv env
     . env/bin/activate
     pip install -r test-requirements.txt
-    cd ../..
+    cd ../../..
     pip install -e .
 }
 
@@ -24,7 +24,6 @@ function uninstall {
 
 function run_test {
     . env/bin/activate
-    CONFIG_PATH=config.yaml
     nosetests tests/ -s
 }
 

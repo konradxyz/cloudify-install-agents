@@ -44,15 +44,17 @@ class InstallerTestBase(unittest.TestCase):
         self.logger.info('Config: {0}'.format(config_path))
         with open(config_path) as config_file:
             self.config = yaml.load(config_file)
-        self.config['repo_dir'] = os.path.expanduser(self.config['repo_dir'])
         self.logger.info(str(self.config))
         current_ctx.set(MockCloudifyContext())
         self.runner = LocalCommandRunner(self.logger)
         self.base_dir = tempfile.mkdtemp()
         self.logger.info('Base dir: {0}'.format(self.base_dir))
+        _, self.script_path = tempfile.mkstemp(dir=self.base_dir,
+                                               suffix='.py')
+        install_utils.prepare_script({}, self.script_path)
+
 
     def tearDown(self):
-        pass
         shutil.rmtree(self.base_dir)
 
     def get_agent(self):
@@ -83,7 +85,7 @@ class InstallerTestBase(unittest.TestCase):
         agent_config_path = agent['agent_file']
         command = '{0} {1} --operation={2} --config={3}'.format(
             self.config['python_path'],
-            self.get_script_path(),
+            self.script_path,
             operation,
             agent_config_path)
         self.logger.info('Calling: "{0}"'.format(command))

@@ -25,7 +25,7 @@ function install {
     virtualenv env
     . env/bin/activate
     pip install -r test-requirements.txt
-    cd ../..
+    cd ../../..
     pip install -e .
 }
 

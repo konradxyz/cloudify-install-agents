@@ -1,4 +1,3 @@
-repo_dir: ../../
 python_path: /usr/bin/python
 agent_url: http://46.101.245.114/cfy/konrad/Ubuntu-trusty-agent.tar.gz 
 agent_user: vagrant 
