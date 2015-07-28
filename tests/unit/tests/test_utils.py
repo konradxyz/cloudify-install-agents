@@ -61,7 +61,7 @@ class UtilsTest(unittest.TestCase):
         module_name = 'temporary_install_agent'
         dest_script = os.path.join(self.dest_path,
                                    '{0}.py'.format(module_name))
-        utils.prepare_script(agent, script_path, dest_script)
+        utils.prepare_script(agent, dest_script)
         sys.path.append(self.dest_path)
         module = importlib.import_module(module_name)
         returned_agent = module.get_cloudify_agent()

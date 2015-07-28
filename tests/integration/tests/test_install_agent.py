@@ -135,7 +135,6 @@ class DoubleWorkerInstallerTest(InstallerTestBase):
                 installer_name = 'installer.py'
                 output = os.path.join(self.base_dir, installer_name)
                 install_utils.prepare_script(agent,
-                                             self.get_script_path(),
                                              output)
                 worker_name = 'celery@{0}'.format(agent['name'])
                 worker_inspect = celery.control.inspect(
