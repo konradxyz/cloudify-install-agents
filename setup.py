@@ -8,6 +8,6 @@ setup(
     ],
     package_data={
         'cloudify_install_agents':
-            ['install_agent.py']
+            ['resources/install_agent.py.template']
     }
 )

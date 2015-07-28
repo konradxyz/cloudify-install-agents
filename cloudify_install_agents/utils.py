@@ -5,8 +5,9 @@ import tempfile
 def prepare_script(agent, dest_path=None):
     if dest_path is None:
         _, dest_path = tempfile.mkstemp(prefix='install_agent', suffix='.py')
-    script_path = pkg_resources.resource_filename('cloudify_install_agents',
-                                                  'install_agent.py')
+    script_path = pkg_resources.resource_filename(
+        'cloudify_install_agents',
+        'resources/install_agent.py.template')
     agent_repr = repr(agent)
     in_script = open(script_path).read()
     out_script = in_script.replace('__AGENT_DESCRIPTION__', agent_repr)

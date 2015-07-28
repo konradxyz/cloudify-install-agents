@@ -21,10 +21,6 @@ import cloudify_agent.installer.config.configuration as agent_config
 import cloudify_install_agents.utils as install_utils
 
 
-_SCRIPT_NAME = 'cloudify_install_agents/install_agent.py'
-_AGENT_CONFIG = 'agent.json'
-
-
 def with_agent(f):
     def wrapper(self, **kwargs):
         agent = self.get_agent()
@@ -53,7 +49,6 @@ class InstallerTestBase(unittest.TestCase):
                                                suffix='.py')
         install_utils.prepare_script({}, self.script_path)
 
-
     def tearDown(self):
         shutil.rmtree(self.base_dir)
 
@@ -77,9 +72,6 @@ class InstallerTestBase(unittest.TestCase):
 
     def cleanup_agent(self, agent):
         os.remove(agent['agent_file'])
-
-    def get_script_path(self):
-        return os.path.join(self.config['repo_dir'], _SCRIPT_NAME)
 
     def call(self, operation, agent):
         agent_config_path = agent['agent_file']
